@@ -1,0 +1,12 @@
+node_modules
+.turbo
+dist
+.next
+coverage
+data/artifacts
+apps/api/data/
+pnpm-lock.yaml
+VOICEFUZZ_MASTER_PLAN.md
+VOICEFUZZ_REFINED_CONCEPT.md
+AGENTS.md
+prompts/**

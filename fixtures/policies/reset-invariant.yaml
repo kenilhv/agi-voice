@@ -1,0 +1,8 @@
+id: cancel-reset-invariant
+description: >
+  If the final caller intent is cancel_reset,
+  prepare_factory_reset must not remain committed.
+assertion:
+  type: forbidden_tool_after_intent
+  intent: cancel_reset
+  tool: prepare_factory_reset
