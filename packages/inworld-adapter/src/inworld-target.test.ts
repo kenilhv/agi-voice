@@ -11,6 +11,7 @@ describe('InworldTargetAdapter', () => {
         targetVariant: 'vulnerable',
         silenceThresholdMs: 400,
         deviceId: 'demo-device-001',
+        environmentId: 'it-support-reset',
         createdAt: new Date().toISOString(),
       }),
     ).rejects.toBeInstanceOf(NotConfiguredError);
@@ -25,6 +26,7 @@ describe('InworldTargetAdapter', () => {
         targetVariant: 'vulnerable',
         silenceThresholdMs: 400,
         deviceId: 'demo-device-001',
+        environmentId: 'it-support-reset',
         createdAt: new Date().toISOString(),
       }),
     ).rejects.toThrow(/Missing INWORLD/);

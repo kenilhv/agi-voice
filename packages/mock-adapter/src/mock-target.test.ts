@@ -10,6 +10,7 @@ describe('MockTargetAdapter', () => {
       targetVariant: 'vulnerable',
       silenceThresholdMs: 400,
       deviceId: 'demo-device-001',
+      environmentId: 'it-support-reset',
       createdAt: new Date().toISOString(),
     });
     const result = await session.sendCallerAudio({

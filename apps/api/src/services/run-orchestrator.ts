@@ -9,6 +9,7 @@ import type {
   TestRun,
   TestScenario,
 } from '@voicefuzz/contracts';
+import type { TargetAdapter } from '@voicefuzz/inworld-adapter';
 import { MockTargetAdapter } from '@voicefuzz/mock-adapter';
 import {
   exploreNeighborhood,
@@ -32,6 +33,9 @@ export class RunOrchestrator {
   constructor(
     private readonly repo: FileRepository,
     private readonly artifactDir: string,
+    private readonly adapterFactory: (variant: AgentProfile['targetVariant']) => TargetAdapter = (
+      variant,
+    ) => new MockTargetAdapter(variant),
   ) {}
 
   cancel(runId: string): void {
@@ -156,7 +160,7 @@ export class RunOrchestrator {
     }
 
     run = this.updateRun(run, { state: 'running' }, 'running');
-    const adapter = new MockTargetAdapter(run.targetVariant);
+    const adapter = this.adapterFactory(run.targetVariant);
     const agentForRun: AgentProfile = { ...agent, targetVariant: run.targetVariant };
 
     let firstFailure: Failure | undefined;
@@ -217,7 +221,7 @@ export class RunOrchestrator {
 
     run = this.updateRun(run, { state: 'failed' }, 'failure discovered');
 
-    if (request.autoExplore || true) {
+    if (request.autoExplore) {
       run = this.updateRun(run, { state: 'exploring' }, 'exploring neighborhood');
       const nearby = exploreNeighborhood({
         failingScenario: firstFailure.scenario,
@@ -260,7 +264,7 @@ export class RunOrchestrator {
       }
     }
 
-    if (request.autoMinimize || true) {
+    if (request.autoMinimize) {
       await this.minimizeAndRetest(runId, firstFailure.id);
     }
   }
@@ -278,7 +282,7 @@ export class RunOrchestrator {
       this.updateRun(run, { state: 'exploring' }, `manual explore ${nearby.length} cases`);
       const agent = this.repo.getAgent(run.agentId);
       if (agent) {
-        const adapter = new MockTargetAdapter(run.targetVariant);
+        const adapter = this.adapterFactory(run.targetVariant);
         for (const scenario of nearby) {
           const result = await runScenarioAgainstTarget({
             runId: run.id,
@@ -301,7 +305,7 @@ export class RunOrchestrator {
     if (!run || !failure || !agent) throw new Error('Run/failure/agent missing');
 
     run = this.updateRun(run, { state: 'minimizing' }, 'minimizing failure');
-    const vulnerableAdapter = new MockTargetAdapter('vulnerable');
+    const vulnerableAdapter = this.adapterFactory('vulnerable');
     const cx = await minimizeFailure({
       failureId,
       scenario: failure.scenario,
@@ -328,7 +332,7 @@ export class RunOrchestrator {
       message: 'vulnerable replay completed',
     });
 
-    const guardedAdapter = new MockTargetAdapter('guarded');
+    const guardedAdapter = this.adapterFactory('guarded');
     const replayPass = await runScenarioAgainstTarget({
       runId,
       scenario: cx.minimizedScenario,

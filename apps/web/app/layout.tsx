@@ -1,15 +1,18 @@
 import type { ReactNode } from 'react';
+import './globals.css';
+import { AppShell } from '@/components/app-shell';
 
 export const metadata = {
-  title: 'VoiceFuzz',
-  description: 'Minimal API connectivity shell for VoiceFuzz',
+  title: 'VoiceFuzz — the adaptive crash-test lab for voice agents',
+  description:
+    'Find the one sentence—and the exact timing—that breaks your voice agent. VoiceFuzz explores, minimizes and permanently captures voice-agent failures.',
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
-      <body style={{ fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace', margin: 0 }}>
-        {children}
+      <body>
+        <AppShell>{children}</AppShell>
       </body>
     </html>
   );

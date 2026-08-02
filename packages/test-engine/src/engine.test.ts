@@ -25,6 +25,7 @@ function demoAgent(variant: 'vulnerable' | 'guarded') {
     targetVariant: variant,
     silenceThresholdMs: 400,
     deviceId: 'demo-device-001',
+    environmentId: 'it-support-reset',
     createdAt: new Date().toISOString(),
   };
 }

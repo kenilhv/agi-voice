@@ -45,14 +45,23 @@ Uses seed `42`, the vulnerable mock target, exploration, minimization, replay, a
 
 ## Environment
 
-Copy `.env.example` to `.env` and leave Inworld values empty for mock mode.
+Copy `.env.example` to `.env`. The API loads this ignored root file automatically.
+
+- Keep `VOICEFUZZ_USE_INWORLD=false` for the deterministic network-independent demo.
+- For the live sponsor probe, set `INWORLD_API_KEY` and `VOICEFUZZ_USE_INWORLD=true`, then restart
+  the API. The key stays server-side.
+- `GET /api/inworld/status` reports whether the explicit Inworld cascade is ready without exposing
+  credentials.
+- `POST /api/inworld/probe` runs one small live case through Inworld TTS-2 → streaming STT/VAD →
+  Router/tool request → TTS-2.
 
 ## Architecture notes
 
 - Explicit cascade only: VAD → STT → LLM → tools → TTS (no Inworld speech-to-speech).
 - Persistence uses a JSON/file repository interface (SQLite-compatible boundary; JSON chosen for zero native deps).
 - `packages/contracts` is frozen after this scaffold for Claude frontend work.
-- `packages/inworld-adapter` is a skeleton that fails with `NotConfiguredError` until Codex completes sponsor integration.
+- `packages/inworld-adapter` implements the opt-in explicit Inworld cascade and fails loudly when
+  live mode is enabled without credentials.
 
 ## Docs
 

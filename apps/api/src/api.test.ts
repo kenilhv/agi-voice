@@ -45,6 +45,8 @@ describe('api', () => {
         agentId: agent.id,
         suiteIds: ['correction-mutator'],
         seed: 42,
+        autoExplore: true,
+        autoMinimize: true,
       },
     });
     expect(runRes.statusCode).toBe(202);
@@ -108,6 +110,38 @@ describe('api', () => {
     });
     expect(res.statusCode).toBe(400);
     expect(res.json().error).toBe('PATH_TRAVERSAL');
+    await app.close();
+  });
+
+  it('reports sponsor readiness honestly and exposes ephemeral environments', async () => {
+    const dir = mkdtempSync(join(tmpdir(), 'vf-api-'));
+    temps.push(dir);
+    const { app } = buildApp({
+      dbPath: join(dir, 'db.json'),
+      artifactDir: join(dir, 'artifacts'),
+      inworldConfig: { enabled: true },
+    });
+
+    const status = await app.inject({ method: 'GET', url: '/api/inworld/status' });
+    expect(status.statusCode).toBe(200);
+    expect(status.json()).toMatchObject({
+      enabled: true,
+      configured: false,
+      state: 'missing_credentials',
+      missing: ['INWORLD_API_KEY'],
+    });
+
+    const environments = await app.inject({ method: 'GET', url: '/api/environments' });
+    expect(environments.statusCode).toBe(200);
+    expect(environments.json().environments[0]).toMatchObject({
+      id: 'it-support-reset',
+      ephemeral: true,
+    });
+    expect(JSON.stringify(environments.json())).not.toContain('systemPrompt');
+
+    const probe = await app.inject({ method: 'POST', url: '/api/inworld/probe', payload: {} });
+    expect(probe.statusCode).toBe(503);
+    expect(probe.json().error).toBe('INWORLD_NOT_CONFIGURED');
     await app.close();
   });
 });

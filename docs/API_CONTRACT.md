@@ -20,6 +20,23 @@ All request/response bodies are validated with Zod schemas from `@voicefuzz/cont
 ### `GET /api/suites`
 
 Returns standard suites. Planned suites have `status: "planned"` and must not be shown as runnable.
+Optional query: `?environmentId=it-support-reset` filters suites to the selected sandbox.
+
+### `GET /api/environments`
+
+Returns test-environment manifests. The MVP ships `it-support-reset`; every target session receives
+a fresh sandbox ledger and demo device state.
+
+### `GET /api/inworld/status`
+
+Returns server-side sponsor readiness and the exact component labels without exposing credentials.
+
+### `POST /api/inworld/probe`
+
+Runs one short live scenario through Inworld TTS-2, streaming STT/VAD, Router reasoning and tool
+requests, the local sandbox ledger, and Inworld TTS-2 response rendering. Returns the objective
+`TestResult`, public environment manifest, and provider labels. Returns `503` when live mode is not
+configured and `502` when an upstream Inworld component fails.
 
 ### `POST /api/agents`
 
@@ -30,7 +47,8 @@ Body:
   "name": "Support Agent",
   "targetVariant": "vulnerable",
   "silenceThresholdMs": 400,
-  "deviceId": "demo-device-001"
+  "deviceId": "demo-device-001",
+  "environmentId": "it-support-reset"
 }
 ```
 

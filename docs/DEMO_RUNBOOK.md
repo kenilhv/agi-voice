@@ -44,3 +44,18 @@ If final caller intent is `cancel_reset`, `prepare_factory_reset` must not remai
 ## Backup
 
 If live UI is unavailable, the CLI demo and `data/artifacts/VF-RESET-0042/` are sufficient for the core story.
+
+## Live Inworld sponsor probe
+
+This is the short live opening, not the network-independent fallback.
+
+1. Copy `.env.example` to `.env`.
+2. Set `INWORLD_API_KEY=<Base64 API key>` and `VOICEFUZZ_USE_INWORLD=true`.
+3. Start the app with `npx pnpm@9.15.0 dev` and open `http://localhost:3000/connect`.
+4. Confirm **Live sponsor readiness: Ready**.
+5. Click **Run live sponsor probe** once. It uses a single 500 ms correction scenario and the
+   ephemeral IT-support reset sandbox.
+6. Show the returned VAD → STT → Router/tool → TTS evidence, then continue to the adaptive lab.
+
+If the sponsor network path fails, turn `VOICEFUZZ_USE_INWORLD=false`, restart, and run the seed-42
+mock flow. Never describe the fallback events as live Inworld traffic.

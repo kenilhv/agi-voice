@@ -100,12 +100,23 @@ export const TestSuiteSchema = z.object({
   scenarioIds: z.array(z.string()).default([]),
 });
 
+export const TestEnvironmentSchema = z.object({
+  id: z.string().min(1),
+  name: z.string().min(1),
+  description: z.string().min(1),
+  stagingAgent: z.string().min(1),
+  toolNames: z.array(z.string()).min(1),
+  supportedSuiteIds: z.array(z.string()).min(1),
+  ephemeral: z.literal(true),
+});
+
 export const AgentProfileSchema = z.object({
   id: z.string().min(1),
   name: z.string().min(1),
   targetVariant: z.enum(['vulnerable', 'guarded']).default('vulnerable'),
   silenceThresholdMs: z.number().int().positive().default(400),
   deviceId: z.string().default('demo-device-001'),
+  environmentId: z.string().default('it-support-reset'),
   createdAt: z.string().datetime(),
 });
 
@@ -222,6 +233,7 @@ export const CreateAgentRequestSchema = z.object({
   targetVariant: z.enum(['vulnerable', 'guarded']).optional(),
   silenceThresholdMs: z.number().int().positive().optional(),
   deviceId: z.string().optional(),
+  environmentId: z.string().optional(),
 });
 
 export const CreateRunRequestSchema = z.object({
@@ -264,6 +276,7 @@ export type Assertion = z.infer<typeof AssertionSchema>;
 export type MutationAxis = z.infer<typeof MutationAxisSchema>;
 export type TestScenario = z.infer<typeof TestScenarioSchema>;
 export type TestSuite = z.infer<typeof TestSuiteSchema>;
+export type TestEnvironment = z.infer<typeof TestEnvironmentSchema>;
 export type AgentProfile = z.infer<typeof AgentProfileSchema>;
 export type TimelineEvent = z.infer<typeof TimelineEventSchema>;
 export type ToolLedgerEntry = z.infer<typeof ToolLedgerEntrySchema>;
